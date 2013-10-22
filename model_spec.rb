@@ -41,6 +41,16 @@ describe Game do
     end
   end
 
+  describe '#open_spots' do
+    it "returns an array of available positions" do
+      @game = Game.new
+      @game.board =  [['O','O','O'],
+                      ['X','5','6'],
+                      ['7','X','9']]
+      expect(@game.open_spots).to eq ['5', '6', '7', '9']
+    end
+  end
+
   describe '#over?' do
     before(:each) do
       @game = Game.new
@@ -85,6 +95,66 @@ describe Game do
                        ['X','X','9']]
         expect(@game.over?).to eq nil
       end
+    end
+  end
+
+  describe '#row_finished' do
+    before(:each) do
+      @game = Game.new
+    end
+    
+    it "returns the symbol of a finished row" do
+      @game.board =  [['X','X','X'],
+                      ['4','O','O'],
+                      ['O','8','9']]
+      expect(@game.row_finished(@game.board)).to eq 'X'
+    end
+
+    it "returns nil when no rows are finished" do
+      @game.board =  [['X','2','X'],
+                      ['4','O','O'],
+                      ['O','8','9']]
+      expect(@game.row_finished(@game.board)).to eq nil
+    end
+  end
+
+  describe '#diag_finished' do
+    before(:each) do
+      @game = Game.new
+    end
+    
+    it "returns the symbol of a finished row" do
+      @game.board =  [['X','O','O'],
+                      ['4','X','O'],
+                      ['O','8','X']]
+      expect(@game.diag_finished(@game.board)).to eq 'X'
+    end
+
+    it "returns nil when no diagonals are finished" do
+      @game.board =  [['X','2','X'],
+                      ['4','O','O'],
+                      ['O','8','9']]
+      expect(@game.diag_finished(@game.board)).to eq nil
+    end
+  end
+
+  describe '#tied' do
+    before(:each) do
+      @game = Game.new
+    end
+    
+    it "returns true for finished games" do
+      @game.board =  [['X','O','O'],
+                      ['X','X','O'],
+                      ['O','O','X']]
+      expect(@game.tied).to eq 'TIE'
+    end
+
+    it "returns nil for unfinished games" do
+      @game.board =  [['X','2','X'],
+                      ['4','O','O'],
+                      ['O','8','9']]
+      expect(@game.tied).to eq nil
     end
   end
 

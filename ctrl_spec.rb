@@ -104,10 +104,6 @@ describe Controller do
         it "sets the correct value" do
           @ctrl.user_begin.should eq 1
         end
-
-        it "stages the user's turn" do
-          pending
-        end
       end
 
       context "second" do
@@ -119,12 +115,6 @@ describe Controller do
         it "sets the correct value" do
           @ctrl.user_begin.should eq 2
         end
-
-        it "stages the computer's turn" do
-          pending
-          #Maybe test that the board has an element 
-          #and then it's the player's turn
-        end
       end
 
       context "with invalid entry" do
@@ -134,6 +124,22 @@ describe Controller do
           @ctrl.user_begin.should eq 2
         end
       end
+    end
+  end
+
+  describe '#play_order' do
+    before(:each) do
+      @ctrl = Controller.new
+    end
+
+    it "lets user go first when they choose" do
+      @user_position = 1
+      expect(@ctrl.play_order(@user_position).first).to eq 'user_turn'
+    end
+
+    it "lets user go second when they choose" do
+      @user_position = 2
+      expect(@ctrl.play_order(@user_position).last).to eq 'user_turn'
     end
   end
 
@@ -161,16 +167,6 @@ describe Controller do
             @ctrl.game.board[1][1].should eq 'O'
           end
         end
-
-        # describe "with invalid option" do
-        #   it "does not update game.board" do
-        #     pending
-        #     #How do I break out of infinite loop?
-        #     # @ctrl.stub(:gets => "10\n")
-        #     # @ctrl.turns
-        #     # @ctrl.game.open_spots == ('1'..'9').to_a
-        #   end
-        # end
       end
     end
   end
@@ -233,7 +229,7 @@ describe Controller do
       @ctrl.game.board = [['O','X','O'],
                           ['4','X','6'],
                           ['O','8','X']]
-      expect(@ctrl.best_move(@ctrl.game, true)).to eq ['O']
+      expect(@ctrl.best_move(@ctrl.game)).to eq ['O']
     end
   end
 
@@ -309,6 +305,109 @@ describe Controller do
     it "selects best highest pct if none are obvious" do
       @outcomes.delete('7')
       expect(@ctrl.best_option(@outcomes)).to eq '4'
+    end
+  end
+
+  describe '#valid_symbol?'do
+    before(:each) do
+      @ctrl = Controller.new
+    end
+
+    it "returns true for X and O" do
+      expect(@ctrl.valid_symbol?('X')).to eq true
+      expect(@ctrl.valid_symbol?('O')).to eq true
+    end
+
+    it "returns false for all others" do
+      expect(@ctrl.valid_symbol?('H')).to eq false
+    end
+  end
+
+  describe '#valid_position?'do
+    before(:each) do
+      @ctrl = Controller.new
+      @ctrl.game.board = [['O','X','O'],
+                          ['4','5','6'],
+                          ['7','8','X']]
+    end
+
+    it "returns true correct numbers" do
+      expect(@ctrl.valid_position?('4')).to eq true
+      expect(@ctrl.valid_position?('5')).to eq true
+    end
+
+    it "returns false for all others" do
+      expect(@ctrl.valid_position?('9')).to eq false
+    end
+  end
+
+  describe '#valid_start?' do
+    before(:each) do
+      @ctrl = Controller.new
+    end
+
+    it "returns true correct numbers" do
+      expect(@ctrl.valid_start?('1')).to eq true
+      expect(@ctrl.valid_start?('2')).to eq true
+    end
+
+    it "returns false for all others" do
+      expect(@ctrl.valid_start?('9')).to eq false
+    end
+  end
+
+  describe 'check_row_win' do
+    before(:each) do
+      @ctrl = Controller.new
+      @ctrl.game.board = [['O','2','O'],
+                          ['4','5','6'],
+                          ['7','O','X']]
+    end
+
+    it "returns the correct index when valid" do
+      expect(@ctrl.check_row_win(@ctrl.game.board, 'O')).to eq '2'
+    end
+
+    it "returns nil otherwise" do
+      @ctrl.game.board[0][0] = '1'
+      expect(@ctrl.check_row_win(@ctrl.game.board, 'O')).to eq nil
+    end
+  end
+
+  describe '#check_diag_win' do
+    before(:each) do
+      @ctrl = Controller.new
+      @ctrl.game.board = [['O','2','O'],
+                          ['4','5','6'],
+                          ['7','X','O']]
+    end
+
+    it "returns the correct index when valid" do
+      expect(@ctrl.check_diag_win(@ctrl.game.board, 'O')).to eq '5'
+    end
+
+    it "returns nil otherwise" do
+      @ctrl.game.board[0][0] = '1'
+      expect(@ctrl.check_diag_win(@ctrl.game.board, 'O')).to eq nil
+    end
+  end
+
+  describe '#outcome' do
+    before(:each) do
+      @ctrl = Controller.new
+      @ctrl.ai_sym = 'X'
+    end
+
+    it "returns a tie when called" do
+      expect(@ctrl.outcome('TIE')).to eq 'TIE'
+    end
+
+    it "returns AI when called" do
+      expect(@ctrl.outcome('X')).to eq 'AI'
+    end
+
+    it "returns HUMAN when called" do
+      expect(@ctrl.outcome('O')).to eq 'HUMAN'
     end
   end
 end
