@@ -410,4 +410,23 @@ describe Controller do
       expect(@ctrl.outcome('O')).to eq 'HUMAN'
     end
   end
+
+  describe '#instant_win?' do
+    before(:each) do
+      @ctrl = Controller.new
+      @ctrl.user_sym = 'O'
+      @ctrl.ai_sym = 'X'
+      @try_hash = {}
+    end
+
+    it "returns true when the array only has wins and ties" do
+      @try_hash[1] = ['X','X']
+      expect(@ctrl.instant_win?(@try_hash.values)).to eq true
+    end
+
+    it "returns false when the array has losses" do
+      @try_hash[1] = ['TIE','X', ['O']]
+      expect(@ctrl.instant_win?(@try_hash)).to eq false
+    end
+  end
 end

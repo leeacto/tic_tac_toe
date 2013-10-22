@@ -30,6 +30,11 @@ class Controller
     test_start = gets.chomp[0]
     if valid_start?(test_start)
       @user_begin = test_start.to_i
+    elsif test_start == nil
+      new_begin = "first"
+      @user_begin = 1
+      sleep(1)
+      @view.invalid_begin(new_begin)
     else
       new_start = test_start.ord
       @user_begin = (new_start % 2) + 1
@@ -39,6 +44,7 @@ class Controller
         new_begin = "second"
       end
       @view.invalid_begin(new_begin)
+      sleep(1)
     end
   end
 
@@ -55,7 +61,7 @@ class Controller
     until @game.over?
       self.send(@play_order[@turn_count % 2])
       @turn_count += 1
-      @view.print_board(@game.board, @user_sym)
+      @view.print_board(@game.board, user_sym)
       sleep(1)
     end
     winner = outcome(@game.over?)
@@ -63,10 +69,10 @@ class Controller
   end
 
   def user_turn(error=nil)
-    @view.print_board(@game.board, @user_sym, error)
+    @view.print_board(@game.board, @user_sym, error, user_sym)
     user_selection = gets.chomp.to_i
     if valid_position?(user_selection.to_s)
-      @game.update_board(user_selection, @user_sym)
+      @game.update_board(user_selection, user_sym)
     else
       user_turn("Invalid Position")
     end
@@ -85,6 +91,7 @@ class Controller
   end
 
   def ai_turn
+    @view.print_board(@game.board, user_sym,'', ai_sym)
     outcomes = {}
     next_move = next_win(@game.board, ai_sym)
     next_move ||= next_win(@game.board, user_sym)
@@ -93,11 +100,20 @@ class Controller
       @game.open_spots.each do |pos|
         outcomes[pos] = []
         new_pos_game = create_and_update_board(@game.board, pos.to_i, ai_sym)
-        outcomes[pos] << simulate_user(new_pos_game).flatten
+        outcomes[pos] << simulate_user(new_pos_game)
+        if instant_win?(outcomes[pos])#!outcomes[pos][0].flatten.uniq.include?(user_sym)
+          next_move = pos
+          break 
+        end
       end
-      next_move = best_option(outcomes)
+      next_move ||= best_option(outcomes)
     end
     @game.update_board(next_move.to_i, ai_sym)
+  end
+
+  def instant_win?(outcome_hash_values)
+    options = outcome_hash_values.flatten.uniq
+    options == [ai_sym]
   end
 
   def next_win(board, sym)
@@ -152,7 +168,7 @@ class Controller
       game_obj.open_spots.each do |user_num|
         user_game = create_and_update_board(game_obj.board, user_num.to_i, user_sym)
         if user_game.over?
-          return 'TIE'
+          return ['TIE']
         else
           simulations << best_move(user_game)
         end

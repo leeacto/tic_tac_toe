@@ -34,9 +34,10 @@ class View
     end
   end
 
-  def print_board(board, user_sym, error=nil)
+  def print_board(board, user_sym, error=nil, turn_sym=nil)
     self.clear_screen!
     puts error if error
+    puts "#{turn_sym}'s Turn" if turn_sym
     puts "You are #{user_sym}"
     puts
     puts <<-EOF
