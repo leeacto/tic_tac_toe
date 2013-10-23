@@ -101,7 +101,7 @@ class Controller
         outcomes[pos] = []
         new_pos_game = create_and_update_board(@game.board, pos.to_i, ai_sym)
         outcomes[pos] << simulate_user(new_pos_game)
-        if instant_win?(outcomes[pos])#!outcomes[pos][0].flatten.uniq.include?(user_sym)
+        if instant_win?(outcomes[pos])
           next_move = pos
           break 
         end
@@ -185,7 +185,7 @@ class Controller
       wins = 0
       ties = 0
       loss = 0
-      v[0].each do |outcome|
+      v[0].flatten.each do |outcome|
         case outcome
         when 'TIE'
           ties +=1
@@ -195,8 +195,9 @@ class Controller
           loss += 1
         end
       end
+      
       if (ties + wins).to_f/(ties + wins + loss) > best_pct
-        best_pct = (ties + wins).to_f/v.count
+        best_pct = (ties + wins).to_f/v[0].flatten.count
         best_pos = k
       end
     end
