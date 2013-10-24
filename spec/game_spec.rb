@@ -1,6 +1,5 @@
 require 'rspec'
 require_relative '../game'
-require 'debugger'
 
 describe Game do
   describe 'Existence' do
@@ -277,28 +276,6 @@ describe Game do
         expect(@game.play_order).to eq [@game.ai, @game.human]
       end
     end
-  end
-  
-  describe '#start' do
-    # before(:each) do
-    #   @game = Game.new
-    #   @game.set_player_preference('X')
-    #   @game.play_order = [@game.human, @game.ai]
-    #   init = ('1'..'9').to_a.shuffle.map{|n| n+"\n"}
-    #   @options = ""
-    #   init.each do |n|
-    #     @options += "'" + n + "', "
-    #   end
-    #   @options = @options[0..-3]
-    # end
-
-    # it "returns a completed board" do
-    #   @game.human.should_receive(:gets).and_return(@options)
-    #   debugger
-    #   @game.start
-    #   expect(@game.over?).to eq true
-    # end
-
   end
   
   describe "#winner" do

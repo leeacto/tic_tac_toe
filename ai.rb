@@ -1,7 +1,7 @@
 require_relative 'player'
 require_relative 'human'
 require_relative 'game'
-require 'debugger'
+
 class Ai < Player
   attr_reader :view
   attr_accessor :symbol, :user_sym
