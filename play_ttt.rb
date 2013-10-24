@@ -2,5 +2,5 @@ require_relative 'controller'
 
 ctrl = Controller.new
 ctrl.symbol_preference
-ctrl.user_start
+ctrl.get_player_order
 ctrl.play_game

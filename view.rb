@@ -50,4 +50,6 @@ class View
     Enter your choice: 
     EOF
   end
+
+  private
 end
