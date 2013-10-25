@@ -1,6 +1,6 @@
 Make a Board for each of the first steps
 Send unfinished board to UserSimulation
-  If there is an User Win, return the outcome
+  If there is a User Win, return the outcome
   If the user must block...
     Create a New Board
   ElsIf there can be multiple choices...

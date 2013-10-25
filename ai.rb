@@ -11,7 +11,6 @@ class Ai < Player
   end
 
   def go(error=nil)
-
     view.print_board(@game.board, @user_sym,'', symbol)
     if @game.turn_count == 0
       next_move = '5'
@@ -82,11 +81,8 @@ class Ai < Player
 
   def best_move(game_obj)
     endings = []
-
-    #return if there is an obvious winning move
     if next_win(game_obj.board, symbol)
       endings << symbol
-    #create board and block if you must block user
     elsif next_win(game_obj.board, @user_sym)
       new_game = create_and_update_board(game_obj.board, next_win(game_obj.board, @user_sym).to_i, symbol)
       if new_game.over?
@@ -95,10 +91,8 @@ class Ai < Player
         endings << simulate_user(new_game)
       end
     else
-      #make a board for each possible position
       game_obj.open_spots.each do |num|
         new_game = create_and_update_board(game_obj.board, num.to_i, symbol)
-        #check if game over (all spots taken)
         if new_game.over?
           endings << 'TIE'
         else
@@ -111,15 +105,12 @@ class Ai < Player
 
   def simulate_user(game_obj)
     simulations = []
-
     if next_win(game_obj.board, @user_sym)
       return [@user_sym]
     elsif next_win(game_obj.board, symbol)
-      #create new board with blocking position
       user_game = create_and_update_board(game_obj.board, next_win(game_obj.board, symbol).to_i, @user_sym)
       return best_move(user_game)
     else
-      #insert each possibility for human selection
       game_obj.open_spots.each do |user_num|
         user_game = create_and_update_board(game_obj.board, user_num.to_i, @user_sym)
         if user_game.over?
